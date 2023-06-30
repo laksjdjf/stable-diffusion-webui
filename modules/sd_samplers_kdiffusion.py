@@ -129,7 +129,8 @@ class CFGDenoiser(torch.nn.Module):
         skip_uncond = False
 
         # alternating uncond allows for higher thresholds without the quality loss normally expected from raising it
-        if self.step % 2 and s_min_uncond > 0 and sigma[0] < s_min_uncond and not is_edit_model:
+        # uncond is meaningless when cond_scale == 1.0
+        if ((self.step % 2 and s_min_uncond > 0 and sigma[0] < s_min_uncond) or cond_scale == 1.0) and not is_edit_model:
             skip_uncond = True
             x_in = x_in[:-batch_size]
             sigma_in = sigma_in[:-batch_size]
